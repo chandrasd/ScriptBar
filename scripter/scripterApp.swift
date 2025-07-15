@@ -8,6 +8,7 @@
 import SwiftUI
 import AppKit
 
+//TODO: change the name to ScriptBar
 @main
 struct scripterApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -160,25 +161,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-// MARK: - Script Model
-struct Script: Codable, Identifiable, Hashable {
-    var id = UUID()
-    var name: String
-    var content: String
-    var createdAt = Date()
-    var isExecutable: Bool {
-        content.hasPrefix("#!/")
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: Script, rhs: Script) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
 // MARK: - Script Manager
 class ScriptManager: ObservableObject {
     @Published var scripts: [Script] = []
@@ -219,7 +201,7 @@ class ScriptManager: ObservableObject {
     func saveScript(_ script: Script) {
         let filename = "\(script.id.uuidString).json"
         let fileURL = scriptsDirectory.appendingPathComponent(filename)
-        
+    
         do {
             let data = try JSONEncoder().encode(script)
             try data.write(to: fileURL)
@@ -319,122 +301,5 @@ class ScriptManager: ObservableObject {
     }
 }
 
-// MARK: - Script Manager View
-struct ScriptManagerView: View {
-    @ObservedObject var scriptManager: ScriptManager
-    let onRefresh: () -> Void
-    @State private var selectedScript: Script?
-    @State private var editingScript: Script?
-    @State private var showingEditor = false
-    
-    var body: some View {
-        VStack {
-            HStack {
-                Text("Scripts")
-                    .font(.largeTitle)
-                    .bold()
-                Spacer()
-                Button("New Script") {
-                    editingScript = Script(name: "", content: "#!/bin/bash\n\n# Your script here\necho \"Hello, World!\"")
-                    showingEditor = true
-                }
-            }
-            .padding()
-            
-            List(scriptManager.scripts, selection: $selectedScript) { script in
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(script.name)
-                            .font(.headline)
-                        Spacer()
-                        if script.isExecutable {
-                            Image(systemName: "terminal")
-                                .foregroundColor(.green)
-                        }
-                    }
-                    Text("Created: \(script.createdAt, formatter: dateFormatter)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .contextMenu {
-                    Button("Edit") {
-                        editingScript = script
-                        showingEditor = true
-                    }
-                    Button("Run") {
-                        Task {
-                            await scriptManager.runScript(script)
-                        }
-                    }
-                    Button("Delete", role: .destructive) {
-                        scriptManager.deleteScript(script)
-                        onRefresh()
-                    }
-                }
-            }
-        }
-        .sheet(isPresented: $showingEditor) {
-            if let script = editingScript {
-                ScriptEditorView(script: script) { updatedScript in
-                    scriptManager.saveScript(updatedScript)
-                    onRefresh()
-                    showingEditor = false
-                    editingScript = nil
-                }
-            }
-        }
-    }
-    
-    private var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-        return formatter
-    }
-}
 
-// MARK: - Script Editor View
-struct ScriptEditorView: View {
-    @State private var script: Script
-    let onSave: (Script) -> Void
-    @Environment(\.dismiss) private var dismiss
-    
-    init(script: Script, onSave: @escaping (Script) -> Void) {
-        self._script = State(initialValue: script)
-        self.onSave = onSave
-    }
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Text("Script Editor")
-                    .font(.title2)
-                    .bold()
-                Spacer()
-                Button("Cancel") {
-                    dismiss()
-                }
-                Button("Save") {
-                    onSave(script)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(script.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-            
-            TextField("Script Name", text: $script.name)
-                .textFieldStyle(.roundedBorder)
-            
-            VStack(alignment: .leading) {
-                Text("Script Content:")
-                    .font(.headline)
-                
-                TextEditor(text: $script.content)
-                    .font(.system(size: 12, weight: .medium, design: .monospaced))
-                    .border(Color.gray.opacity(0.3))
-            }
-        }
-        .padding()
-        .frame(width: 500, height: 400)
-    }
-}
 
