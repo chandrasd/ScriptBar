@@ -27,6 +27,7 @@ struct ScriptManagerView: View {
             }
             .padding()
             
+            // TODO: Replace the contextMenu with buttons the HStack, right click for actions is not as intuitive.
             List(scriptManager.scripts, selection: $selectedScript) { script in
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
