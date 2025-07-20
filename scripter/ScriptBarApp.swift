@@ -1,6 +1,6 @@
 //
-//  scripterApp.swift
-//  scripter
+//  ScriptBarApp.swift
+//  ScriptBar
 //
 //  Created by Chandra Dasari on 7/2/25.
 //
@@ -8,9 +8,8 @@
 import AppKit
 import SwiftUI
 
-//TODO: change the name to ScriptBar
 @main
-struct scripterApp: App {
+struct ScriptBarApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
