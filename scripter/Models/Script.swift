@@ -20,9 +20,8 @@ struct Script: Codable, Identifiable, Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-    
+
     static func == (lhs: Script, rhs: Script) -> Bool {
         lhs.id == rhs.id
     }
 }
-
