@@ -94,67 +94,67 @@ struct ScriptManagerView: View {
     }
 }
 
-// TODO: refactor these buttons into a generic custom button and reuse
 struct ScriptActionButtons: View {
     let onRun: () -> Void
     let onEdit: () -> Void
     let onDelete: () -> Void
-    @State private var isHoveringOverDelete = false
-    @State private var isHoveringOverEdit = false
-    @State private var isHoveringOverPlay = false
 
     var body: some View {
         HStack(spacing: 8) {
-            Button(action: onRun) {
-                Image(systemName: "play.fill")
-            }
-            .imageScale(.large)
-            .frame(width: 32, height: 32)
-            .buttonStyle(.borderless)
-            .background(
-                isHoveringOverPlay ? Color.gray.opacity(0.1) : Color.clear
+            HoverIconButton(
+                systemImageName: "play.fill",
+                tooltip: "Run script",
+                accessibilityLabel: "Run script",
+                action: onRun,
+                hoverColor: .gray.opacity(0.1),
+                foregroundColor: { _ in .primary }
             )
-            .clipShape(.buttonBorder)
-            .help("Run script")
-            .accessibilityLabel("Run script")
-            .onHover {
-                hovering in
-                isHoveringOverPlay = hovering
-            }
 
-            Button(action: onEdit) {
-                Image(systemName: "pencil.and.list.clipboard")
-            }
-            .imageScale(.large)
-            .frame(width: 32, height: 32)
-            .buttonStyle(.borderless)
-            .background(
-                isHoveringOverEdit ? Color.gray.opacity(0.1) : Color.clear
+            HoverIconButton(
+                systemImageName: "pencil.and.list.clipboard",
+                tooltip: "Edit script",
+                accessibilityLabel: "Edit script",
+                action: onEdit,
+                hoverColor: .gray.opacity(0.1),
+                foregroundColor: { _ in .primary }
             )
-            .clipShape(.buttonBorder)
-            .help("Edit script")
-            .accessibilityLabel("Edit Script")
-            .onHover {
-                hovering in
-                isHoveringOverEdit = hovering
-            }
 
-            Button(action: onDelete) {
-                Image(systemName: "trash")
-            }
-            .imageScale(.large)
-            .frame(width: 32, height: 32)
-            .buttonStyle(.borderless)
-            .foregroundColor(isHoveringOverDelete ? .red : .gray)
-            .background(
-                isHoveringOverDelete ? Color.gray.opacity(0.1) : Color.clear
+            HoverIconButton(
+                systemImageName: "trash",
+                tooltip: "Delete script",
+                accessibilityLabel: "Delete script",
+                action: onDelete,
+                hoverColor: .gray.opacity(0.1),
+                foregroundColor: { hovering in hovering ? .red : .primary }
             )
-            .clipShape(.buttonBorder)
-            .help("Delete script")
-            .accessibilityLabel("Delete script")
-            .onHover { hovering in
-                isHoveringOverDelete = hovering
-            }
+        }
+    }
+}
+
+struct HoverIconButton: View {
+    let systemImageName: String
+    let tooltip: String
+    let accessibilityLabel: String
+    let action: () -> Void
+    let hoverColor: Color
+    let foregroundColor: (Bool) -> Color
+
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemImageName)
+                .imageScale(.large)
+                .frame(width: 32, height: 32)
+                .foregroundColor(foregroundColor(isHovering))
+                .background(isHovering ? Color.gray.opacity(0.1) : Color.clear)
+                .clipShape(.buttonBorder)
+        }
+        .buttonStyle(.borderless)
+        .help(tooltip)
+        .accessibilityLabel(accessibilityLabel)
+        .onHover { hovering in
+            isHovering = hovering
         }
     }
 }
