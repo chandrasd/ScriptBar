@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a bug report for the iOS app
+description: File a bug report for ScriptBar
 title: "[Bug] "
 labels: [bug]
 assignees: []
@@ -8,29 +8,50 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for filing a bug report! Please fill in the following information.
+        Thanks for helping improve ScriptBar! Please fill out the form below so we can better understand and fix the issue.
 
   - type: input
-    id: ios-version
+    id: macos-version
     attributes:
-      label: iOS Version
-      placeholder: e.g., iOS 17.5
+      label: macOS Version
+      placeholder: e.g., macOS 14.5 (Sonoma)
     validations:
       required: true
 
   - type: input
-    id: device
+    id: hardware
     attributes:
-      label: Device
-      placeholder: e.g., iPhone 14 Pro Max
+      label: Device Model
+      placeholder: e.g., MacBook Pro M1 Pro
     validations:
       required: true
+
+  - type: input
+    id: scriptbar-version
+    attributes:
+      label: ScriptBar Version
+      placeholder: e.g., v1.0.0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: issue-area
+    attributes:
+      label: Where is the issue happening?
+      options:
+        - label: Icon is missing or unresponsive
+        - label: Menu not displaying correctly
+        - label: Script actions not working as expected
+        - label: Preferences or settings issues
+        - label: App crashes or becomes unresponsive
+        - label: Other (explain below)
 
   - type: textarea
-    id: description
+    id: bug-description
     attributes:
-      label: Bug Description
-      description: Describe the bug in detail.
+      label: Describe the bug
+      description: What did you expect to happen, and what actually happened?
+      placeholder: Concise description of the issue
     validations:
       required: true
 
@@ -38,10 +59,25 @@ body:
     id: steps
     attributes:
       label: Steps to Reproduce
-      description: How can we reproduce the issue?
+      description: Help us reproduce the bug by listing the steps.
       placeholder: |
-        1. Open the app
-        2. Tap on X
-        3. See error
+        1. Launch ScriptBar
+        2. Click the icon
+        3. Select a script
+        4. Observe the issue
     validations:
       required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or Crash Reports
+      description: Add crash logs or console output if available
+      placeholder: |
+        You can find logs using the Console app or in ~/Library/Logs. You can also drag in crash reports.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Anything else we should know? Screenshots, screen recordings, etc.
