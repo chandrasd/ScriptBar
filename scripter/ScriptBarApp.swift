@@ -22,6 +22,7 @@ struct ScriptBarApp: App {
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var scriptManager = ScriptManager()
+    private weak var manageScriptsWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -157,6 +158,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func manageScripts() {
+        // If window already exists and is visible, bring it to front instead of creating new one
+        if let existingWindow = manageScriptsWindow {
+            if existingWindow.isVisible {
+                existingWindow.makeKeyAndOrderFront(nil)
+                NSApp.activate(ignoringOtherApps: true)
+                return
+            } else {
+                manageScriptsWindow = nil
+            }
+        }
+
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
             styleMask: [.titled, .closable, .resizable],
@@ -167,7 +179,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.title = "Manage Scripts"
         window.center()
 
-        let contentView = ScriptManagerView(scriptManager: scriptManager) {
+        // Use weak self to avoid retain cycles
+        let contentView = ScriptManagerView(scriptManager: scriptManager) { [weak self] in
+            guard let self = self else { return }
             if let runScriptItem = self.statusItem.menu?.item(at: 0),
                 let runScriptMenu = runScriptItem.submenu
             {
@@ -176,8 +190,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         window.contentView = NSHostingView(rootView: contentView)
+        
+        manageScriptsWindow = window
+        
+        window.isReleasedWhenClosed = false
+
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.willCloseNotification,
+            object: window,
+            queue: .main
+        ) { [weak self] _ in
+            self?.manageScriptsWindow = nil
+        }
     }
 
     @objc func quit() {
