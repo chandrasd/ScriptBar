@@ -14,11 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build project
+            - name: Build project
         run: |
           xcodebuild \
-            -project ScriptBar.xcodeproj \  # or use -workspace if needed
-            -scheme ScriptBar \             # replace with your scheme name
+            -project ScriptBar.xcodeproj \
+            -scheme ScriptBar \
             -destination 'platform=macOS' \
             clean build
 
@@ -29,3 +29,4 @@ jobs:
             -scheme ScriptBar \
             -destination 'platform=macOS' \
             test
+
