@@ -1,0 +1,31 @@
+name: Build and Test macOS App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build project
+        run: |
+          xcodebuild \
+            -project ScriptBar.xcodeproj \  # or use -workspace if needed
+            -scheme ScriptBar \             # replace with your scheme name
+            -destination 'platform=macOS' \
+            clean build
+
+      - name: Run tests
+        run: |
+          xcodebuild \
+            -project ScriptBar.xcodeproj \
+            -scheme ScriptBar \
+            -destination 'platform=macOS' \
+            test
