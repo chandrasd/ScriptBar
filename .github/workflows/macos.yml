@@ -17,15 +17,15 @@ jobs:
       - name: Build project
         run: |
           xcodebuild \
-            -project ScriptBar.xcodeproj \
-            -scheme ScriptBar \
+            -project scripter.xcodeproj \
+            -scheme scripter \
             -destination 'platform=macOS' \
             clean build
 
       - name: Run tests
         run: |
           xcodebuild \
-            -project ScriptBar.xcodeproj \
-            -scheme ScriptBar \
+            -project scripter.xcodeproj \
+            -scheme scripter \
             -destination 'platform=macOS' \
             test
